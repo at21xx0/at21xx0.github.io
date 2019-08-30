@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>P music</title><style type="text/css">body{margin:0}</style></head><body>
+<input type="text" onkeydown="if(event.keyCode===13)try{eval(this.value)}catch(err){alert(err);}"><br>
+<div id="playlist"></div>
+<a href="javascript: play({id:27876224})">God knows</a>
+<script type="text/javascript" src="musicj.js"></script><script type="text/javascript" src="music.js"></script><script type="text/javascript" src="musicdata.js"></script><script type="text/javascript">
+function playlist(d){var a="";var i=0;while(i<d.length){a+="<a href='javascript: play("+JSON.stringify(d[i])+")'>"+d[i].name+"</a><br>";i++}document.getElementById("playlist").innerHTML=a;}
+playlist(data);
+alert('ok');
+</script>
+</body>
+</html>
