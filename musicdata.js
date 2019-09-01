@@ -5,7 +5,7 @@ var data=
 {"id":450041131,"name":"Daydream cafe","src":"m/1.mp3"},
 {"id":26201959,"name":"天使にふれたよ! (相遇天使)"},
 {"id":27517201,"name":"Alicemagic ~TV animation ver.~"},
-{"id":"725692","name","Only my railgun","src":"m/3.mp3"},
+{"id":725692,"name":"Only my railgun","src":"m/3.mp3"},
 {"id":412327036,"name":"いけないボーダーライン"},
 {"id":672188,"name":"You"},
 {"id":2529459,"name":"贝多芬病毒"},
