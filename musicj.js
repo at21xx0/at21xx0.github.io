@@ -1,6 +1,6 @@
 //API来自 https://120.79.36.48/
-var GetF=function(url){var xmlhttp;if(window.XMLHttpRequest){xmlhttp=new XMLHttpRequest();}else{xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}/*xmlhttp.onreadystatechange=function(){if(xmlhttp.readyState==4&&xmlhttp.status==200){value=xmlhttp.responseText;}};*/xmlhttp.open("GET",url,false);xmlhttp.send();if(xmlhttp.readyState==4&&xmlhttp.status==200){return xmlhttp.responseText}else{xmlhttp.status}}
-function play(a){alert(a.id);
+function GetF(url){var xmlhttp;if(window.XMLHttpRequest){xmlhttp=new XMLHttpRequest();}else{xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}/*xmlhttp.onreadystatechange=function(){if(xmlhttp.readyState==4&&xmlhttp.status==200){value=xmlhttp.responseText;}};*/xmlhttp.open("GET",url,false);xmlhttp.send();if(xmlhttp.readyState==4&&xmlhttp.status==200){return xmlhttp.responseText}else{xmlhttp.status}}
+function play(a){//alert(a.id);
 var data=GetF("http://120.79.36.48/song/detail?ids="+a.id);
 data=JSON.parse(data);//alert(JSON.stringify(data));
 //if(!a.p)a.p="Api..........";
