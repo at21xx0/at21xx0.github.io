@@ -7,6 +7,7 @@ var data=
 {"id":27517201,"name":"Alicemagic ~TV animation ver.~"},
 {"id":725692,"name":"Only my railgun","src":"m/3.mp3"},
 {"id":412327036,"name":"いけないボーダーライン"},
+{"id":32303030,"name":"WHITE ALBUM"},
 {"id":672188,"name":"You"},
 {"id":1343921802,"name":"終わらない歌"},
 {"id":2529459,"name":"贝多芬病毒"},
