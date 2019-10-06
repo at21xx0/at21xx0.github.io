@@ -8,7 +8,7 @@ var data=
 {"id":725692,"name":"Only my railgun","src":"m/3.mp3"},
 {"id":412327036,"name":"いけないボーダーライン"},
 {"id":32303030,"name":"WHITE ALBUM"},
-{"id":4977944,"name":Light colors"},
+{"id":4977944,"name":"Light colors"},
 {"id":4965073,"name":"涙の理由"},
 {"id":28468972,"name":"悲しみの向こうへ"},
 {"id":28305923,"name":"secret base ~君がくれたもの~"},
