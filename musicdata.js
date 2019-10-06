@@ -1,5 +1,5 @@
 var data=
-({"id":27876224,"name":"God knows"},
+[{"id":27876224,"name":"God knows"},
 {"id":29732992,"name":"光るなら"},
 {"id":28151022,"name":"鳥の詩"},
 {"id":450041131,"name":"Daydream cafe","src":"m/1.mp3"},
@@ -21,4 +21,4 @@ var data=
 {"id":461749,"name":"これがオタクの生きる道"},
 {"id":27927604,"name":"君とのなくしもの"},
 {"id":26089099,"name":"Song for friends"},
-{"id":1313052233,"name":"aLIEz (澤野弘之 LIVE[nZk]004 (2016/11/03@TOKYO DOME CITY HALL))"});
+{"id":1313052233,"name":"aLIEz (澤野弘之 LIVE[nZk]004 (2016/11/03@TOKYO DOME CITY HALL))"}];
