@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>Color</title><style type="text/css">body{margin:0;}</style></head><body>
+<button onclick="color('RGB','Color','List');">Next</button><input id="RGB" type="text" value="#" onkeydown="if(event.keyCode==13&&/\#[0-9A-F]{3,6}/i.test(this.value))ColorTo(this.value,'RGB','Color','List');"><div style="width:100%;height:60px;background-color:#FA6872;" id="Color"></div><div id="List"><div style="color:#FA6872;">#FA6872</div></div>
+<script language="JavaScript">
+function pass(a){
+var b="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+~`|}{[]\:;?><,./-=";if(typeof a[0]=="string")b=a[0];
+var c="";
+var d=b.length;
+var e,i;
+while(c.length<a[a.length-1]){
+e=Math.floor(Math.random()*d);
+i=1;
+while(i<a.length-1){
+if(e<=a[i][1]&&e>=a[i][0]){
+c+=b.charAt(e);break};i++}}
+return c}
+alert(pass(["AVB",[0,3],3]));
+function color(a,b,c){var color="#"+pass(["0123456789ABCDEF",[0,15],6]);ColorTo(color,a,b,c);}
+function ColorTo(color,a,b,c){color=color.toUpperCase();document.getElementById(a).value=color;document.getElementById(b).style.backgroundColor=color;document.getElementById(c).innerHTML+='<div style="color:'+color+'">'+color+'</div>';}
+</script>
+</body>
+</html>
