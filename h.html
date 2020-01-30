@@ -1,20 +1,6 @@
 <!DOCTYPE HTML>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>P</title><style type="text/css">body{margin:0}.G1{width:100%;height:32px;position:relative;background-color:#DDD;border:1px solid black;font-size:80%;outline:none}</style></head><body>
-<h>浏览器主页</h>
-<div id="uu" style="Z-index:5;width:80%;height:auto;top:0;left:10%;position:relative;background-color:red"></div>
-<div id="dd" style="width:100%;height:auto;position:relative;"></div>
-<!--<div id="n"><input type="text" id="a0" value="uu" onkeydown="if(event.keyCode===13){mlist.varb(this.value)}"></div>-->
-<!--<script type="text/javascript" src="base.js"></script>-->
-<script type="text/javascript">
-var data=({list:[{v:"Search",d:[{v:"Bing",d:"http://cn.bing.com/search?q=",t:"u1"},{v:"360",d:"http://so.com/serach?q="},{v:"神马",d:"https://m.sm.cn/s?q="},{v:"Google",d:"http://www.google.com/search?hl=zh-CN&q="},{v:"搜狗",d:"https://wap.sogou.com/web/searchList.jsp?q="},{v:"Baidu",d:"http://www.baidu.com/s?wd="}]},{v:"Video API",d:[{v:"API 1",d:"http://jx.yswy.top/?url=",t:"u2",r:function(a,b){if(/^av[0-9]+/i.test(a))b.d="https://xbeibeix.com/api/bilibilivideo.php?url=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2F";return b}},{v:"API 2",d:"https://z1.m1907.cn/?jx="},{v:"API 3",d:"https://jx.iztyy.com/svip/?url="},{v:"API 4",d:"http://api.m2048.com/index.php?url="},{v:"API 5",d:"http://api.tv920.com/vip/?url="},{v:"API 6",d:"https://jx.618g.com/?url="},{v:"API 7",d:"http://api.7ye.in/jx/?v="},{v:"API 8",d:"http://wodaoba.cn/cs2upupyo.abc?pid="}]},{v:"Bookmark"}],data:"uu"});
-var index=({start:function(a,b,c){if(c)index.c=c;document.getElementById(c).innerHTML='<iframe style="width:100%;" id="'+c+'_i"></iframe>';index.a=a;index.b=b;document.getElementById(b).innerHTML='<div id="'+b+'_l"></div><div style="width:100%;height:24px;position:relative;"><div id="'+b+'_b" style="top:0;left:0;height:24px;width:48px;max-height:24px;position:absolute;background:blue;"></div><input type="text" style="left:48px;top:0;right:0;height:24px;width:auto;font-size:120%;border: 1px solid black;position:absolute;background-color:#8FF;" placeholder="Some text..." onkeydown="if(event.keyCode==13)try{if(index.q.r)index.q=index.q.r(this.value,index.q);index.q.f(this.value);}catch(e){alert(e);}"></div>';
-var i=0;var p=index.a.list;var q="";while(i<p.length){q+='<button id="'+b+'_l'+i+'" onclick="javascript: index.i('+i+',\''+b+'\');" style="left:0;top:0;width:'+(100/p.length)+'%;height:28px;position:relative;background-color:#DDD;border:1px solid black;font-size:80%;outline:none;">'+p[i].v+'</button>';i++;};document.getElementById(b+"_l").innerHTML=q;index.i(0,b);},f:function(a,b){if(a==-1){document.getElementById(b+"_bs").style.display="block";}else{document.getElementById(b+"_bs").style.display="none";var t=index.a.list[index.p].d[0];var q=index.a.list[index.p].d[a];document.getElementById(b+"_bf").innerHTML=q.v;if(t.t&&!q.t)q.t=t.t;if(t.r&&!q.r)q.r=t.r;if(index.y[q.t]!=undefined&&!q.f){q.f=index.y[q.t]}else if(!q.f){q.f=index.y["u1"];};index.q=q;
-}}
-,i:function(a,b){if(!b)b=index.b;var i=0;while(i<index.a.list.length){document.getElementById(b+"_l"+i).style.backgroundColor="#DDD";i++;};document.getElementById(b+"_l"+a).style.backgroundColor="#999";index.p=a;var i=0;
-var p='<button onclick="javascript: index.f(-1,\''+b+'\');" id="'+b+'_bf" style="width:100%;height:24px;position:relative;background-color:#DDD;border:1px solid black;font-size:80%;outline:none;">Undefined</button><div id="'+b+'_bs">';var q=index.a.list[index.p].d;while(i<q.length){p+='<button onclick="javascript: index.f('+i+',\''+b+'\');" style="width:100%;height:24px;position:relative;background-color:#DDD;border:1px solid black;font-size:80%;outline:none;">'+q[i].v+'</button>';i++};p+='</div>';document.getElementById(b+"_b").innerHTML=p;index.f(0,b);},b:"index",p:0,q:{f:function(a){alert(a);}},a:{},y:{u1:function(a){window.open(index.q.d+encodeURI(a));},u2:function(a){document.getElementById(index.c+"_i").src=index.q.d+encodeURI(a);}}});
-index.start(data,"uu","dd");
-</script>
-
-<script type="text/javascript" src="base.js"></script>
+<h>API test</h>
+<input type="text" class="G1" onkeydown="if(event.keyCode===13)window.open('http://jx.yswy.top/?url='+this.value)">
 </body>
 </html>
