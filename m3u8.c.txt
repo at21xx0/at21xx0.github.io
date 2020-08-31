@@ -1,0 +1,328 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include "curl/curl.h"
+#include<unistd.h>
+#include<pthread.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<unistd.h>
+
+
+/* 
+在那之前，可以尝试
+ffmpeg -user_agent 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537(KHTML, like Gecko) Chrome/47.0.2526Safari/537.36' -i 'url' -c copy output.mp4
+*/
+//clang h.c -lcurl
+//#define d_url "https://sina.com-h-sina.com/20180731/3810_7cf5481a/1000k/hls/index.m3u8"
+//#define d_url "https://meng.wuyou-zuida.com/20191221/24140_21328593/1000k/hls/index.m3u8"
+
+//#define d_url "https://api.adinisp.com/data/qyvip/63aaa3c65d6bda2cfb8549b47fbd980a.m3u8"
+//#define d_url "http://122.141.230.138/c1/2020/07/20_0/626D094EC6F5B8C723F8746B74808518_20200720_1_1_531_mp4/A967A5705480DA5CDACA7481A59DB448.m3u8?arange=0&pm=asIL5Dn_xBg1EMK3oGJL5MlT6vQYS8FXxvsBA8lBEJPhAT_4QpdS9psGlNq2dY3OZDgxM~BDM5iOFzOKaNlJJLw2I8NshQJBKPBD7l3hXwbbT5shDaZmVArHrBsXsfp7A_VMoILoT15Ta2RkjIQbCpf0HkUSq7nz1TSEPZQvQkK1M5ZpVusilEoHiqt5xc4ePqRtRA0HIIK41IaP3AZSsXq9d4L8IRGERdO~eBPz7JJ1VJc1vH2FgGd1MFgYT_Xmyg7eR6whxcShwf8nWWxF5E4hpAZjdF1FUEvbKz04eX2g6CAc_uhw5571UC_3_X6ZLNa7E~O~R0usonubOhKse7VukJVjlm~2c_jHknnDENvWpH1gqC7fBQ--&vcdn=0&scid=314"
+//#define d_url "https://api.adinisp.com/data/iqiyi/c5eebebff02fd26b48695f02ccc1e4ac.m3u8"
+//#define d_url "http://hls.cntv.lxdns.com/asp/hls/main/0303000a/3/default/978a64ddd3a1caa85ae70a23414e6540/main.m3u8"
+//#define d_url "http://hls.cntv.lxdns.com/asp/hls/1200/0303000a/3/default/978a64ddd3a1caa85ae70a23414e6540/1200.m3u8"
+#define d_url "https://3954-out.liveplay.myqcloud.com/live/3954_383154376_1200.m3u8?bizid=3954&txSecret=29992b222ecc9765999798a31983f812&txTime=5f4f8307&uid=0&fromdj=&_qedj_t=Bhi9o1oM7%2BRSBWr2PtrMrD2MeZabsor21NwQASYUMzgzMTU0Mzc2XzE1OTg0NDE2MDUyX0beoExWHHVwV01DYUZMQUFCX2k0UWl6NjBGQUFDWG53dGhmAHABhitwZ2dfbGl2ZV9yZWFkX2lmY19tdF9zdnIuZW50cnlfaDVfbGl2ZV9yb29tlgEwpgsxMDYuOC4xNS40NbEEsMYA1gDs8A8E&src_from=egame_h5"
+//#define d_url "http://112.50.243.8/PLTV/88888888/224/3221225820/1.m3u8"
+//#define d_url "https://sina.com-h-sina.com/20180731/3833_e5507eb9/1000k/hls/index.m3u8"
+
+/*pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_lock(&mutex);
+锁
+pthread_mutex_unlock(&mutex);*/
+struct m3u8_d{
+char pwd[128]; /* 默认的 pwd */
+char ua[128]; /* 默认ua */
+int line; /* 默认线程数 */
+}m3u8_dm={"/storage/emulated/0/home/video/","Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537(KHTML, like Gecko) Chrome/47.0.2526Safari/537.36",7};
+//struct m3u8_t;
+struct m3u8_info{
+char *pwd; /* 文件保存路径 */
+char *url; /* m3u8链接 */
+char *ua; /* 访问 ua */
+int line; /* 最大线程 */
+int ex; /* 是否阻塞(线程) */
+//int z;
+int buf; /* 缓冲尺寸 */
+int nbuf; /* 存在链接保存数 */
+int max; /* 是否合并(多少个合并) */
+float d_wait; /* 等待 */
+int nbuf2; /* 链接字数+ */
+int d; /* 文件名前缀宽度 */
+/* int d_list; */ /* 是否保存下载列表 */
+long n; /* 序号(为0不开启序号) */
+int p; /* 位置 */
+int q; /* 位置 */
+long en; /* 序号临界合并 */
+long int fl; /* 合并文件位置 */
+float s; /* sscanf 时间 */
+float ss; /* 时间 */
+char **ex_list; /* 检测链接存在必要 */
+char *fn; /* 文件名 */
+char *w; /* info->pwd+info->p tmp */
+char *u; /* url_tmp */
+char *refer; /* refer参数 */
+char *aes; /* aes 参数 */
+FILE *foo; /* m3u8 文件 */
+FILE *list_foo; /* 纪录下载文件的文件 */
+FILE *save_foo; /* 输出文件 */
+FILE *tmp_foo; /* 临时文件 */
+pthread_t th; /* 主线程 */
+//void **free_list;
+struct m3u8_t *t; /* 结构体 指针 */
+struct curl_slist *headers; /* 请求头 */
+}m3u8_m={NULL,NULL,NULL,7,1,1024,5,50,0.8,64,8,1};
+struct m3u8_t{
+pthread_t th;
+CURL *curl;
+FILE *foo;
+char *url;
+int r;
+struct m3u8_info *info;
+};
+size_t m3u8_save(char *d,size_t n,size_t l,void *p){
+printf("d:%zu,%zu\n",n,l);
+fwrite(d,n,l,(FILE *)p);
+return n*l;
+}
+int m3u8_th(struct m3u8_t *h){
+//printf("start: %s\n",h->url);
+CURLcode res;
+long res_code;
+h->curl=curl_easy_init();
+curl_easy_setopt(h->curl,CURLOPT_URL,h->url);
+curl_easy_setopt(h->curl, CURLOPT_ENCODING, "gzip");
+curl_easy_setopt(h->curl, CURLOPT_FOLLOWLOCATION, 1L);
+//curl_easy_setopt(h->curl,CURLOPT_TIMEOUT,100);
+curl_easy_setopt(h->curl,CURLOPT_WRITEDATA,(void *)h->foo);
+//curl_easy_setopt(h->curl, CURLOPT_RANGE, "100-999");
+curl_easy_setopt(h->curl,
+CURLOPT_HTTPHEADER,h->info->headers);
+//if(1){//curl_easy_setopt(handle,CURLOPT_RESUME_FROM_LARGE, (curl_off_t)getLocalFileLenth(localFile));//curl_easy_setopt(h->url,CURLOPT_RANGE,"");}
+//curl_easy_setopt(h->curl,CURLOPT_WRITEFUNCTION,m3u8_save);
+curl_easy_setopt(h->curl,CURLOPT_WRITEFUNCTION,fwrite);
+//         curl_easy_setopt(h->curl,CURLOPT_VERBOSE,1);//打印调试信息
+//curl_easy_
+h->r++;
+res=curl_easy_perform(h->curl);
+//fclose(h->foo);
+res=curl_easy_getinfo(h->curl, CURLINFO_RESPONSE_CODE, &res_code);
+curl_easy_cleanup(h->curl);
+if(res!=CURLE_OK||res_code>299)return -1;
+return 0;
+}
+char *m3u8_mk(char *pwd,int *p,char *s1,char *s2){
+int i;//=strlen(pwd);
+char *m;
+if(*p==0)*p=strlen(pwd);
+if(pwd[*p-1]!='/')pwd[*p++]='/',pwd[*p]='\0';//路径自动补全(  '/'  )
+if(s1==NULL||s2==NULL)return pwd;
+m=pwd+*p;
+for(i=1; ;i++){
+sprintf(m,"%s%d%s",s1,i,s2);
+if(access(pwd,F_OK)!=0){
+if(p!=NULL&&s2[strlen(s2)-1]=='/'){
+mkdir(pwd,770);
+while(pwd[++(*p)]!='\0');
+}
+break;
+}
+}
+return pwd;
+}
+int m3u8_exist(char ***b,int i,char *a,int c,int e){
+char *m,*n;
+//printf("%p %d %s %d %d\n",*b,i,a,l,e);
+e+=c;
+if(*b==NULL){*b=(char **)calloc(i+1,sizeof(char *));for(c=0;c<i;c++){(*b)[c]=(char *)malloc(e*sizeof(char));(*b)[c][0]='\0';}}
+if(a==NULL){
+for(c=0;c<i;c++)free((*b)[c]);
+free(*b);
+*b=NULL;
+return 0;
+}
+e=-1;
+for(c=0;c<i;c++){
+m=(*b)[c];n=a;
+if(*m=='\0'&&e==-1){e=c;continue;}
+while(*m++==*n++)if(*n=='\0')return 0;
+//printf("btd: %c %c\n",*(m-1),*(n-1));
+}
+//for(c=0;c<i;c++)printf("%s\n",(*b)[c]);
+strcpy((*b)[e],a);if(++e==i)e=0;(*b)[e][0]='\0';
+return 1;
+}
+int m3u8_main(struct m3u8_info *info){
+extern struct m3u8_d m3u8_dm;
+struct m3u8_t *t;
+unsigned int n;
+int i,z=0;
+char *m;
+char *buf=(char *)malloc(info->buf*sizeof(char));
+if(info->ex==0){pthread_create(&info->th,NULL,(void *)&m3u8_main,(void *)info);return 0;}
+t=info->t=(struct m3u8_t *)malloc(info->line*sizeof(struct m3u8_t));
+memset(&t[0],'\0',sizeof(struct m3u8_t));
+t[0].info=info;
+t[0].foo=NULL;
+t[0].curl=NULL;
+t[0].th=0;
+if(info->headers==NULL){info->headers=curl_slist_append(info->headers,"Connection: keep-alone");if(info->ua==NULL)info->ua=m3u8_dm.ua;sprintf(buf,"User-Agent: %s",info->ua);info->headers=curl_slist_append(info->headers,buf);if(info->refer!=NULL)sprintf(buf,"Refer: %s",info->refer);info->headers=curl_slist_append(info->headers,buf);buf[0]='\0';}
+//free(buf);
+for(i=1;i<info->line;i++){memcpy(&t[i],&t[0],sizeof(struct m3u8_t));}
+i=strlen(info->url);
+while(info->url[i--]!='/');
+info->q=i+2 ;
+m=(char *)malloc((i+256)*sizeof(char));
+strcpy(m,info->url);
+info->u=m;
+/*   选择路径，新建文件夹   */
+m=(char *)malloc(info->buf*sizeof(char));
+if(info->pwd==NULL)
+strcpy(m,m3u8_dm.pwd);
+else
+strcpy(m,info->pwd);
+info->pwd=m;
+m=NULL;
+if(info->max!=0){
+if(info->fn!=NULL){
+m3u8_mk(info->pwd,&info->p,NULL,NULL);
+strcpy(info->pwd+info->p,info->fn);
+}else m3u8_mk(info->pwd,&info->p,"v",".ts");
+info->save_foo=fopen(info->pwd,"wb");
+info->pwd[info->p]='\0';
+}
+m3u8_mk(info->pwd,&info->p,"tmp_","/");
+info->w=info->pwd+info->p;
+strcpy(info->w,"list.txt");
+info->list_foo=fopen(info->pwd,"w+");
+/* ({[0]}) */
+//exit(0);
+i=-1;
+info->en=info->max+info->line+1;
+info->buf*=sizeof(char);
+//printf("%ld",t[1].th);
+while(1){
+i++;if(i==info->line)i=0;
+//printf("%d,%p\n",i,t[i].th);
+if(pthread_kill(t[i].th,0)==0)continue;
+if(t[i].foo!=NULL){pthread_join(t[i].th,NULL);fclose(t[i].foo),t[i].foo=NULL;}
+//printf("pthread: %d\n",i);
+//printf("run: %d\n",info->n);
+while(z!=-1){
+if(info->foo!=NULL)if(fgets(buf,info->buf,info->foo)==NULL){fclose(info->foo);info->foo=NULL;}
+if(info->foo==NULL){
+/* 缓存 m3u8  */
+t[i].url=info->url;
+strcpy(info->w,"tmp.m3u8");
+//printf("pwd: %s\n",info->pwd);
+t[i].foo=fopen(info->pwd,"w+");
+if(m3u8_th(&t[i])==-1){
+fclose(t[i].foo);t[i].foo=NULL;
+i--;z=-1;break;}
+fseek(t[i].foo,0,SEEK_SET);
+info->foo=t[i].foo;
+t[i].foo=NULL;
+continue;
+}
+//printf("b: %s",buf);
+if(strstr(buf,"#EXTINF")!=NULL){
+sscanf(buf+8,"%f",&info->s);
+//printf("%%f: %f\n",info->s);
+fscanf(info->foo,"%s",buf);
+z=strlen(buf);
+//printf("buf: %s %d %c \n",buf,z,buf[z-1]);
+fgets(buf+z+3,info->buf/* -z-3 */,info->foo);
+//z=strlen(buf)-1;
+//buf[z]='\0';
+//z=strlen(buf)-1;
+//buf[z]='\0';
+if(info->d_wait)usleep(info->d_wait*info->s*1000000);
+//printf("nbuf: %d\n",info->nbuf);
+//printf("buf: %s\n",buf);
+if(info->nbuf)if(m3u8_exist(&info->ex_list,info->nbuf,buf,z,info->nbuf2)==0){printf("exist\n");continue;}
+//printf("read: %s\n",buf);
+if(strstr(buf,"//")!=NULL){t[i].url=buf;m=buf+z;while(*m!='/')m--;m++;}else if(*buf=='/'){m=strstr(info->u,"//");m+=2;while(*m!='/')m++;strcpy(m,buf);t[i].url=info->u;m=buf+z;while(*m!='/')m--;m++;}else{m=buf;strcpy(info->u+info->q,buf);t[i].url=info->u;}
+z=0;
+if(info->n!=0){sprintf(info->w,"%0*lx.ts",8,info->n++);}else{
+while(m[z]!='\0'&&m[z]!='?')z++;
+strncpy(info->w,m,z);
+info->pwd[info->p+z]='\0';
+}
+printf("save: %s\n",info->w);
+if(info->list_foo)fprintf(info->list_foo,"#EXTINF:%f,\n%s\n",info->s,info->w);
+t[i].foo=fopen(info->pwd,"wb");
+t[i].r=1;
+pthread_create(&t[i].th,NULL,(void *)m3u8_th,&t[i]);
+while(t[i].r!=1);
+break;
+}else if(strstr(buf,"#EXT-X-ENDLIST")!=NULL){z=-1;break;}/* else if(strstr(buf,"#include")!=NULL){printf("见了鬼了\n");} */
+}
+if(z==-1){
+printf("exit();\n");
+for(i=0;i<info->line;i++){if(t[i].foo!=NULL){pthread_join(t[i].th,NULL);fclose(t[i].foo);t[i].foo=NULL;}}
+}
+if(z==-1||info->n > info->en){
+//printf("fn: %s\n",info->fn);
+if(info->list_foo){
+fseek(info->list_foo,info->fl,SEEK_SET);
+for(i=0;i<info->max;i++){
+if(fgets(buf,info->buf,info->list_foo)==NULL)break;
+sscanf(buf+8,"%f",&info->s);
+//printf("time: %f\n",info->s);
+info->ss+=info->s;
+fgets(buf,info->buf,info->list_foo);
+if(info->save_foo){
+buf[strlen(buf)-1]='\0';
+strcpy(info->w,buf);
+info->tmp_foo=fopen(info->pwd,"rb");
+printf("foo: %s\n",info->w);
+if(info->tmp_foo==NULL)continue;
+while((n=fread(buf,1,info->buf,info->tmp_foo))>0)fwrite(buf,n,1,info->save_foo);
+fclose(info->tmp_foo);
+remove(info->pwd);
+}
+}
+info->fl=ftell(info->list_foo);
+fseek(info->list_foo,0,SEEK_END);
+if(info->save_foo)fflush(info->save_foo);
+}
+info->en+=i+1;
+
+i=0;
+if(z==-1)break;
+}
+}
+
+free(buf);
+free(info->u);
+if(info->save_foo)fclose(info->save_foo);
+if(info->list_foo==NULL)fclose(info->list_foo);
+curl_slist_free_all(info->headers);
+m3u8_exist(&info->ex_list,info->nbuf,0,0,0);
+free(info->pwd);
+return 0;
+}
+
+
+
+int m3u8_st(char *url){
+struct m3u8_info handle;
+extern struct m3u8_info m3u8_m;
+memcpy(&handle,&m3u8_m,sizeof(struct m3u8_info));
+printf("st\n");
+handle.url=url;
+m3u8_main(&handle);
+return 0;
+}
+
+
+int main(void){
+printf("hello,world!\n");
+curl_global_init(CURL_GLOBAL_ALL);
+m3u8_st(d_url);
+curl_global_cleanup();
+printf("sleep: 10s\n");
+sleep(10);
+
+return 0;
+}
