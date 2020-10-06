@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><!--<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">-->
+<style type="text/css">
+body{margin: 0;}
+/*div.info input[type=text]{width: 97%;} */
+/* textarea.html_textarea{width: 100%;} */
+</style>
+<title>save</title>
+</head><body>
+<div id="info">
+<h>网页转图片</h><br>
+<a href="javascript: void(0);" onclick="javascript: document.getElementById('help_div').style.display='block';">帮助</a><br>
+<div id="help_div" style="position:fixed;left:0;top:0;background-color:white;display:none;z-index:100;">
+<a href="javascript: void(0);" onclick="javascript: this.parentNode.style.display='none';">隐藏</a><br>
+使用js实现html转图片 markdown转图片<br>
+转换图片需输入高度和宽度，否则图片容易不全<br>
+加载图片可能出现跨域问题<br>
+<br>
+<br>
+可能用到的js<br>
+https://cdnjs.cloudflare.com/ajax/libs/ng-showdown/1.1.0/ng-showdown.min.js <br>
+https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js <br>
+https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js <br>
+https://cdn.bootcdn.net/ajax/libs/showdown/1.9.1/showdown.min.js <br>
+https://cdnjs.cloudflare.com/ajax/libs/casualjs/0.1.2/casual.min.js <br>
+https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js <br>
+http://html2canvas.hertzen.com/dist/html2canvas.min.js <br>
+</div>
+html2canvas.js:<br><input type="text" id="a1" value="http://html2canvas.hertzen.com/dist/html2canvas.min.js"><br>
+<input type="text" placeholder="height" id='a2'><br>
+<input type="text" placeholder="width" id='a3'><br>
+使用 .md <input type="button" onclick="javascript: e=document.getElementById('markdown_div');if(this.value=='NO'){this.value='OFF';e.style.display='none';}else{this.value='NO';e.style.display='inline';}" value="OFF">
+<div id="markdown_div" style="display:none;">
+<input type="button" id="markdown_button" onclick="javascript: md_con('markdown_textarea','demo','showdown_js','markdown_button');" value="转换"><br>
+showdown.js:<br>
+<input type="text" id="showdown_js" value="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"><br>
+<textarea id="markdown_textarea" placeholder="markdown"></textarea>
+</div>
+<br>
+<textarea  id="html_value" placeholder="html"></textarea><br>
+<input type="button" id="button_show" value="show" onclick="show('demo','html_value');"><input type="button" id="html_button" value="convert" onclick="javascript: con('demo','info','a1','a2','a3','html_value','html_button');">
+</div>
+<div id="demo" style="width: auto;">
+</div>
+<script type="text/javascript">
+var newElement=function(tag,o,inner,move_e=document.body){
+var e=document.createElement(tag);
+for(var key in o)e.setAttribute(key,o[key]);
+if(inner)e.innerHTML=inner;
+move_e.appendChild(e);
+//pos.removeChild(e);
+return e;
+}
+var md_con=function(id_show,id_demo,id_js,id_button){
+try{
+if(showdown)void(0);
+}catch(e){
+newElement("script",{type:'text/javascript',src:document.getElementById(id_js).value,onload:'javascript: document.getElementById("'+id_button+'").click();'},null,document.head);
+return ;
+}
+var converter = new showdown.Converter();
+document.getElementById(id_demo).innerHTML=converter.makeHtml(document.getElementById(id_show).value);
+}
+var show=function(id_show,id_area){
+var e=document.getElementById(id_show);
+e.innerHTML=document.getElementById(id_area).value;
+}
+var con=function(id_show,id_info,id_js,id_h,id_w,id_area,id_button){
+var s=null;
+var c=null;
+try{
+if(html2canvas)void(0);
+}catch(e){
+newElement("script",{type:'text/javascript',src:document.getElementById(id_js).value,onload:'javascript: document.getElementById("'+id_button+'").click();'},null,document.head);
+return ;
+}
+var e=document.getElementById(id_show);
+s=window.getComputedStyle(e);
+var w=0,h=0;
+w=parseInt(document.getElementById(id_w).value);
+if(!w)w=parseInt(s.width);
+h=parseInt(document.getElementById(id_h).value);
+if(!h)h=parseInt(s.height);
+alert("w: "+w.toString()+"\nheight: "+h.toString());
+if(w==0||h==0)return null;
+c=document.createElement("canvas");
+c.width=w;
+c.height=h;
+c.style.width=w.toString()+"px";
+c.style.height=h.toString()+"px";
+document.body.appendChild(c);
+//var context = c.getContext("2d");
+//context.translate(0,0);
+//var context = canvas2.getContext("2d");
+//context.scale(2, 2);
+html2canvas(e,{canvas:c}).then(function(canvas){
+var c=document.createElement("a");
+try{
+c.setAttribute("href",canvas.toDataURL('image/png'));
+}catch(e){alert(e);}
+document.body.removeChild(canvas);
+c.setAttribute("download",Math.random().toString().replace(/0\./,"")+".png");
+c.style.display="none";
+document.body.appendChild(c);
+c.click();
+document.body.removeChild(c);
+});
+
+alert("hhh");}
+</script>
+</body></html>
