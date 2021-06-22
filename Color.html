@@ -12,9 +12,8 @@ e=Math.floor(Math.random()*d);
 i=1;
 while(i<a.length-1){
 if(e<=a[i][1]&&e>=a[i][0]){
-c+=b.charAt(e);break};i++}}
-return c}
-alert(pass(["AVB",[0,3],3]));
+c+=b.charAt(e);break};i++;}}
+return c;}
 function color(a,b,c){var color="#"+pass(["0123456789ABCDEF",[0,15],6]);ColorTo(color,a,b,c);}
 function ColorTo(color,a,b,c){color=color.toUpperCase();document.getElementById(a).value=color;document.getElementById(b).style.backgroundColor=color;document.getElementById(c).innerHTML+='<div style="color:'+color+'">'+color+'</div>';}
 </script>
