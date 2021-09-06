@@ -1,0 +1,417 @@
+<!DOCTYPE HTML>
+<html><head>
+<title>loader demo</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<style type="text/css">
+body{margin:0;}
+</style>
+<script type="text/javascript">
+	window.onerror = function(message, source, lineno, colno, error)
+{
+	let t="message:"+message+"\nsource:"+source+"\nlineno:"+lineno+"\ncolno:"+"error:"+error;
+	if(!confirm(t))
+		document.write(t);
+}
+</script>
+<script type="text/javascript" src="./loader2.js"></script>
+</head><body>
+	<div id="loader_div">
+	</div>
+<script type="text/javascript">
+loader.init(document.getElementById("loader_div"));
+loader.load({
+	type:"code",
+	file: "init.js",
+	simple:true,
+	code:`// 准备
+loader.init(HTMLElement);
+//Element 可留空，默认在document.body 输出`
+});
+testJs(`// 实例
+loader.load({
+	tag:"div",
+	value:"test"
+});
+`);
+testJs(`// 基本使用
+loader.load({
+	tag:"div",
+	attribute:{
+		style:"color:green;display:block;",
+		id:"element1"
+	},
+	cc:14,
+	child:[{
+		v:"div1",// v value innerHTML 起相同作用
+		},{
+		v:"通常情况下属性会传递(如tag)，但有个别不会(如child，attribute child中的type)"
+		},{
+		tag:"button",
+		attribute:{
+			onclick:"alert(document.getElementById('element1').innerHTML)"
+		},
+		v:"test"
+		}],
+	next:{
+		v:"结束"
+	}
+	});`);
+testJs(`// 拼接
+loader.load({
+	tag:"a",
+	attribute:{
+		href:[["href"]]
+	},
+	v:["打开链接 ",["href"]],
+	child:{
+		tag:"div",
+		v:["div",["value: ",["value"]]]
+		// value 不存在，不拼接
+	},
+	href:"https://www.baidu.com/"
+});
+`);
+testJs(`// 自定义type
+loader.appendType({
+	href1:{
+		tag:"a",
+		attribute:{
+			href:[["href"]]
+		},
+		v:"打开链接",
+	}
+});
+loader.load({
+	type:"href1",
+	href:"https://www.baidu.com/"
+	});
+`);
+testJs(`//exec 函数
+var obj={tag:"div",tt:"tt ",exec:function(obj){
+	var c=loader.cat(obj);
+	c.innerHTML=obj.tt;
+	// 一般来说，obj可用this代替
+	c.innerHTML+=this.tt;
+	return c;
+}};
+loader.load(obj);
+obj2={exec:function(obj){
+	var arr=[{tag:"div",v:"bb",exec:loader.cat}];// exec 传递，手动默认值
+	return arr;
+}};
+loader.load(obj2);
+`);
+loader.load({
+	type:"code",
+	simple:true,
+	code:`// load delay
+load 
+	设置 waitload=true，需要onload属性
+delay
+	设置延时
+`
+});
+testJs(`// 传递  顺序
+var f1=function(obj){
+	obj.v="i:"+obj.i+"j:"+obj.j;
+	return loader.cat(obj);
+}
+// defaultObj types (prev obj) 传递顺序
+// n n y y 可向下传递
+loader.appendType({
+	test1:{
+		tag:"div",
+		exec:f1,
+		i:0,// 可以被覆盖，不可传递
+		j:2
+	//child,next // 可合并，可传递
+	}
+});
+loader.load([{
+	type:"test1",
+	i:1,
+	child:{//type 不可传递
+		tag:"div",
+		exec:f1
+	}
+	// next 大致相同，type 可传递
+}]);
+// 优先级 exec 返回的数组 > child > next
+// 可使用load2 摆脱单层的传递
+`);
+loader.load({
+	type:"code",
+	simple:true,
+	code:`// 设置默认项
+可设置默认 types,exec,defaultObj
+如
+Object.assign(loader.types,{"newtype":newtype});
+`
+});
+loader.load({
+	tag:"h3",
+	v:"type 实例"
+});
+testJs(`// type a
+loader.load({
+	type:"a",
+	href:"https://www.baidu.com/",// 必选，跳转的链接
+	v:"baidu" // 可选，默认显示href
+});
+`);
+testJs(`//type pic
+loader.load({
+ type:"pic",
+ alt:"alt", // 可选
+ src:"./test.png"
+});
+`);
+testJs(`//type code
+loader.load({
+	type:"code",
+	//simple:false, //默认 undefined Copy download 按钮
+	code:"hello,world!",
+	file:"a.txt" // 默认 可选
+});
+`);
+testJs(`//type hide
+loader.defaultObj.hideHide="[隐藏]";
+loader.load({
+	type:"hide",
+	hideShow:"[展开]",// 可选
+	title: "联系方式", // 可选 默认 No Title
+	child:[{tag:"p",v:"联系方式1"},{v:"联系方式2"}]
+});
+`);
+testJs(`//type hash
+window.hashInit=function() // 全局
+{
+	// 放在最后 或 window.onload
+	loader.exec.hashchange();// 初始化
+	loader.exec.hashDefault([{
+	tag:"div",
+	v:"<br><br><br><br><br>"
+	},{
+			tag:"a",
+			attribute:{
+				"href":[["href"]],
+				"style":"display:block;"
+			},
+			href:"#a",
+			v:"a"
+		},{
+			tag:"a",
+			attribute:{
+				"href":[["href"]],
+				"style":"display:block;"	
+			},
+			href:"#b",
+			v:"b"
+		}],true);
+	// true 为悬浮 div
+	// false 为默认加载
+}
+Object.assign(loader.hash,{
+	a:{
+			back:true,
+			tag:"p",
+			v:"paragraph a"
+	},
+	b:{
+			tag:"p",
+			v:"paragraph b"
+	}
+});
+loader.load({
+	tag:"input",
+	attribute:{
+		value:"加载",
+		type:"button",
+		onclick:"hashInit();"
+	}
+	});
+`);
+testJs(`//type simple
+Object.assign(loader.exec,{
+	checkT:function(obj,n,val){
+		let c=(obj[n]===val)?"=":"!";
+		return (n+":"+typeof(obj[n])+" "+obj[n]+c+"=="+typeof(val)+" "+val+"\\n");
+	}
+});
+loader.appendType({
+	check1:{
+		tag:"pre",
+		exec:function(obj)
+		{
+			var str="";
+			let c=loader.exec.checkT;
+			str+=c(obj,"a",true);
+			str+=c(obj,"a","true");
+			str+=c(obj,"b",1000);
+			obj.v=str;
+			return loader.cat(obj);
+		}
+	}
+});
+loader.load({
+	type:"simple",
+	data:\`a:true,b:1000,type:check1
+a: true,b= 1000
+true, 1000
+\`
+// : = 可混用
+});
+loader.load({
+	type:"simple",
+	data:\`text:NO TITLE,type:text
+ \\\`paragraph 1
+paragraph 2
+paragraph 3\\\`
+ "paragraph 4"
+\`
+});
+`);
+testJs(`//type 163
+/*
+loader.load({
+	type:"163",
+	id:,
+*/
+`);
+testJs(`// type B
+/*
+loader.load({
+	type:"B",
+	aid:,
+	bvid:,
+	cid
+});
+*/
+`);
+loader.load({tag:"hr"});
+loader.defaultObj.hideShow="[展开]";
+loader.load({
+	type:"hide",
+	title:"更多",
+	child:{
+		type:"code",
+		simple:true,
+		code:`// 函数
+loader.init(HTMLElement);
+	传入 HTMLElement 默认值 document.body
+loader.g(b,n);
+	获取 b的子元素
+	n 为第几个，默认返回数组
+loader.void();
+	什么也不做
+loader.CreateElement(tag,attribute,innerHTML,parentNode,e1,e2);
+	创建一个元素 并移动到parentNode(默认document.body)内
+	可设置匿名函数 e1(创建的HTMLElement,e2);在移动到 parentNode前执行 或e2(HTMLElement,e1); 在之后执行
+loader.loadcss(href,onload);
+	动态加载css
+loader.loadjs(href,onload);
+	动态加载js
+loader.loadcsstext(text);
+	加载css 片段
+loader.download(value,file,url)
+	下载文件
+	file: 文件名
+	value: 文件内容或文件url
+	url: true或false,true时value为url，否则是文本，默认false
+loader.copy(value)
+	把value复制到剪贴板
+loader.a2(a,temp,less)
+	复制  合并 object array
+	a 为被复制项
+	temp存在，合并，返回temp
+	less===true 不覆盖值(除undefined)的复制 默认false
+	返回复制 object 或 array 或 a
+loader.a() // 多参数
+	复制 合并object，传入数组视为多个object，忽略null
+loader.cat_(obj,arr)
+	合并字符串
+	arr为字符串，返回arr
+	arr为数组
+		格式  ["str1",["key1"],["key2"],"str2"]
+		拼接 str obj[key1] obj[key2] str2
+		obj[key1]===undefined 返回 ""
+		另外 ["str1",["key1","key2"],"str2"]
+		拼接 str1 key1 key2 str2
+		["str1",["key1",["key2"]],"str"]
+		拼接 str1 key1 obj[key2] str2 
+		obj[key2]===undefined 拼接 str1 str2
+		也支持[["key1"]]
+loader.cat(obj)
+	创建返回 HTMLElement
+	依据 obj.tag obj.attribute obj.innerHTML obj.parentNode
+	obj.innerHTML 可由 obj.v obj.value 代替
+	parentNode 为HTMLElement 父元素，// 默认defaultObj.parentNode
+	obj.attribute 的value ,obj.v ,obj.value ,obj.innerHTML 都支持loader.cat_
+loader.prev_arr(arr,prev,pushArr)
+	为数组arr中的object 设置 prev值
+	如 arr[0]=prev arr[1]=arr[0] arr[2]=arr[1] ...
+	arr 是 object 的数组
+	prev 是arr[0]的值 默认 null
+	pushArr 是数组作用相当于把pushArr和arr连结，默认null
+loader.waitload()
+	obj.waitload=true 时，等待元素加载
+loader.getType(obj,arr)
+	返回loader.types[obj.type]，如返回值.type存在，递归loader.getType，最终返回数组
+loader.load(obj,copy)
+	顺序加载(设置队列)，创建HTMLElement
+	copy===true 时，复制一份obj作为参数
+	obj可传入数组，传入数组后数组内的tag,type,等可传递(下一个为undefined时) (可为下一个赋值null 恢复默认值)
+	obj 与前一个可传递，如obj的前一个  obj.prev.type="text"
+		obj.type=undefined 之后obj.type="text"
+		obj.type=null obj.type不传递
+		next,child,attribute 不可传递
+	函数内深层复制合并 obj.defalutObj,loader.getType(obj),(传递后的obj)，产生一个temp
+		之后执行obj.exec(temp) // 默认值在loader.defaultObj
+		可返回HTMLElement，作为child的parentNode
+		可返回数组，是obj的数组，紧挨着上一个元素而不是队列最后
+	队列优先级 (加在队列最前面) obj.exec(返回数组时) > obj.child > obj.next
+loader.load2(arr)
+	取消数组中的每一个 obj(数组) 传递
+	相当于for(let t of arr)loader.load(t);
+loader.appendType(obj);
+	添加type，格式 {"typeName":{tag:"xxx",...}}
+	相当于Object.assign(loader.types,obj);
+loader.urlEnc(obj,enc)
+	输入 obj.url="http://xxx/", obj.data={a:1,b2}
+	输出 "http://xxx/?a=1,b=2"
+	enc===true 时，对 obj[key] encode
+loader.getD(t);
+	相当于为t申请一个临时变量
+	返回字符串，如 loader.d[0]
+loader.freeD(n)
+	传入数字或包含getD()返回值的字符串，复制null
+
+
+
+`
+	}
+});
+loader.load({
+	type:"hide",
+	title:"关于",
+	child:{
+		type:"code",
+		code:`loader_js_demo
+产生
+	解决大量iframe同时加载的问题
+状态
+	未完成`
+	}
+});
+function testJs(code,file)
+{
+	var obj={type:"code",simple:true,code:code};
+	if(file!==undefined)
+		obj.file=file;
+	loader.load(obj);
+	try{
+		eval(code);
+	}catch(e){alert(code.substring(0,20)+'\n'+e);}
+}
+</script>
+</body></html>

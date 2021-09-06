@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html><head>
+<title>loader demo</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<style type="text/css">
+body{margin:0;}
+</style>
+<script type="text/javascript" src="./loader2.js"></script>
+</head><body>
+<div id="loader_div"></div>
+<script type="text/javascript">
+loader.init(document.getElementById("loader_div"));
+//var music
+loader.defaultObj.hideShow="[展开]";
+loader.defaultObj.hideHide="[隐藏]";
+/*
+if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+{
+	void(0);
+}
+else
+	loader.loadcsstext("body{width:60%;background-color:red;");
+*/
+var dc=`,type:163_,waitload: true,delay: 100`
+// 默认的
+var d1=`id:760037`+dc+`
+691506
+1440982806
+39224651
+27582620
+767726
+39227633
+730806`;
+// 无理由
+var d2=`id:434902428`+dc+`
+1376512213
+1325388747
+22636709
+33737082
+509002
+760028
+460508`;
+//结果相似
+var d3=`id:760058`+dc;
+//不在开头
+var d4=`id:1334780738`+dc;
+//知名
+var d5=`id:39224615`+dc+`
+22712173
+357126
+493981`;
+//版本过多 (碎月)
+var d6=`id:730631`+dc;
+//前奏太长
+var d7=`id:28339714`+dc;
+//High
+var d8=`id:28360849`+dc;
+//没版权
+var d9=`aid=58715038,bvid=BV1zx411f7Kx,cid=102382550,type:B_
+64833248,BV1h4411975W,112543967`;
+//风格
+var d10=`id:30854151`+dc+`
+1384318412
+529391942
+510172
+26085475
+22636684`
+var d11=`id:849211`+dc;
+//
+var d12=`id:717724`+dc+`
+1306507269
+1306507269
+1365872552
+1338140759
+29017078
+854729
+1386011473
+692193
+463842649
+424262056
+579954`;
+//var d13=`id:`+dc;
+//loader.load(simple(d1));
+Object.assign(loader.hash,{"sD":simple(d12)});
+loader.exec.hashchange();
+loader.exec.hashDefault(simple(`v:Music,tag:h1
+v:这是一个歌单，被分为几个部分,div
+默认的,h3
+ null,tag:div,child: simple(d1)
+v:不在前八个,tag:h3
+title:无理由,child: simple(d2),type:hide,v: null,tag: null
+结果相似, simple(d3)
+不在开头(3.46), simple(d4)
+知名, simple(d5)
+版本过多, simple(d6)
+前奏太长, simple(d7)
+High, simple(d8)
+没版权, simple(d9)
+风格, simple(d10)`));
+function simple(data)
+{
+	return ({
+		type:"simple",
+		data:data
+	});
+}
+</script>
+</body></html>
