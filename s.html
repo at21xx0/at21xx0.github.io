@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html><head>
+<title>Sign</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<style type="text/css">
+body{margin:0;}
+</style>
+<script type="text/javascript" src="./loader2.js"></script>
+</head><body>
+<div id="loader_div">
+	<h2 style="text-align:center;margin:0;">关于</h2>
+	<!--<p style="text-decoration: line-through;margin:0;">这是关于个性签名的补充</p>-->
+	<div>标签 MC C C++ 东方project</div>
+	<a href="./music.html"><div>Music</div></a>
+	<button onclick="alert(this.parentNode.innerHTML);">html</button>
+</div>
+<script type="text/javascript">
+loader.init(document.getElementById("loader_div"));
+loader.defaultObj.hideShow="[展开]";
+loader.defaultObj.hideHide="[隐藏]";
+var mc=`v:又名我的世界，这里指国际版 ,tag:span
+官网,href:"https://www.minecraft.net/zh-hans",type:a,tag: null
+作为一个生存，红石向的玩家,tag:div,type: null`;
+// null, null, null`;
+var ut=`v:官网,href:"https://undertale.com/",type:a`;
+var dfqyt=`v:东方project 非官方游戏,tag:div
+"包名: com.knead.TouhouTNA02"`;
+var smw=`v:Super Mario World,tag:div
+需要使用SFC模拟器(Snes9x)`;
+var nsmw_=`v:超级马里奥世界改版,tag:div
+改版详情页,a,href:"https://www.smwcentral.net/?p=section&a=details&id=21541",type:a
+找到的攻略,a,"https:/www.bilibili.com/video/BV1H7411L78E"`;
+var th=`v:推荐,tag:div
+东方红魔乡
+东方妖妖梦
+东方永夜抄
+东方风神录`;
+var Gm=`v:打砖块,tag:div
+"最终幻想4,5,6(GBA版)"
+恶魔城晓月圆舞曲`;
+var sLink=`v:RIME,href:"https://rime.im/download/",type:a,display:block
+7-zip,"https://www.7-zip.org/"
+7-zip中文网站,"https://sparanoid.com/lab/7z/"
+ffmpeg,"http://ffmpeg.org/"
+VLC,"https://www.videolan.org/vlc/"`;
+loader.load([{
+	type:"hide",
+	title:"game",
+	child:simple(`tag:div,v:这里列举几个跨平台游戏
+title:Minecraft,child: simple(mc),type:hide,tag: null,v: null
+Undertale, simple(ut)
+东方千夜贴, simple(dfqyt)
+超级马里奥世界, simple(smw)
+New Super Mario World 2 Around The World, simple(nsmw_)
+东方原作, simple(th)
+更多, simple(Gm)`)
+},{
+	title:"软件",
+	child:simple(`v:这里主要是跨平台开源软件,tag:div
+RIME(输入法)
+7-zip(压缩软件)
+ffmpeg(视频格式(封装格式)转换软件)(也可下载视频，直播流)
+VLC(播放器)
+ null, null,title:常用链接,child: simple(sLink),type:hide`)
+},{
+	title:"新坑",
+	child:simple(`v:控制台下落式音游,tag:div
+打砖块
+紫色主题的游戏
+mcbe 树厂 潜影贝农场
+没什么用的下载器
+...主要功能，根据url多线程下载
+...如访问127.0.0.1:8487/https/www.file.xxx/file 得到多线程下载速度`)
+},{
+	title:"链接",
+	child:simple(`v:包括链接和文件,tag:div
+v:Bing,href:"https://cn.bing.com/",d: null,type:a,tag: null,display:block
+GuerrillaMail,"https://www.guerrillamail.com/zh"
+匿名发送电子邮件,"http://tool.chacuo.net/mailsend"
+SMWC,"https://www.smwcentral.net/"
+Color,"./Color.html"
+Here,"./here.html"
+C,"https://www.runoob.com/cprogramming/c-tutorial.html"
+C++,"https://www.runoob.com/cplusplus/cpp-tutorial.html"
+RUNOOB,"https://www.runoob.com/"
+Chrome 64位 离线,"https://dl.google.com/tag/s/installdataindex/update2/installers/ChromeStandaloneSetup64.exe","ChromeStandaloneSetup64.exe"`)
+},{
+	title:"email",
+	child:simple(`v:"at21xx0@163.com,tag:div
+"at21xx0@qq.com"`)
+}]);
+/*
+loader.load({
+	type:"hide",
+	title:"文件",
+	child:{
+		type:"simple",
+		data:`v:bg.7z    背景图,tag:div`
+	}
+});
+*/
+/*
+if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+{
+	void(0);
+}
+else
+	loader.loadcsstext("body{width:60%;background-color:red;");
+*/
+//loader.exec.hashchange();
+function simple(data)
+{
+	return ({
+		type:"simple",
+		data:data
+	});
+}
+</script>
+</body></html>

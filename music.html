@@ -1,10 +1,19 @@
 <!DOCTYPE HTML>
 <html><head>
-<title>loader demo</title>
+<title>Music</title>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <style type="text/css">
 body{margin:0;}
 </style>
+<script type="text/javascript">
+	window.onerror = function(message, source, lineno, colno, error)
+{
+	let t="message:"+message+"\nsource:"+source+"\nlineno:"+lineno+"\ncolno:"+"error:"+error;
+	if(!confirm(t))
+		document.write(t);
+}
+</script>
+
 <script type="text/javascript" src="./loader2.js"></script>
 </head><body>
 <div id="loader_div"></div>
@@ -52,14 +61,20 @@ var d5=`id:39224615`+dc+`
 //版本过多 (碎月)
 var d6=`id:730631`+dc;
 //前奏太长
-var d7=`id:28339714`+dc;
+var d7=`id:28339714`+dc+`
+22636628`;
 //High
 var d8=`id:28360849`+dc;
 //没版权
 var d9=`aid=58715038,bvid=BV1zx411f7Kx,cid=102382550,type:B_
 64833248,BV1h4411975W,112543967`;
 //风格
-var d10=`id:30854151`+dc+`
+var d10=`id:22636645`+dc+`
+34003788
+468513480
+22636685
+28219120
+30854151
 1384318412
 529391942
 510172
@@ -79,9 +94,38 @@ var d12=`id:717724`+dc+`
 463842649
 424262056
 579954`;
+var s1=simple(`id:1306498255`+dc+`
+869119
+28928723
+581142
+29562701
+647129
+1581252115
+717724
+850441`);
+var s2=simple(`id:1811209786`+dc+`
+32235695
+850553
+850775
+29562702
+1834823818
+22808826
+444267516
+33579507
+32737684`);
+var s3=simple(`id:分享m.o.v.e的单曲《Rage Your Dream (TV动画《头文字D》ED1)》: 28823239`+dc+`
+869392
+1832363905
+1393187503
+29027436
+610212
+28633198
+28178158
+1397725153
+29562700`);
 //var d13=`id:`+dc;
 //loader.load(simple(d1));
-Object.assign(loader.hash,{"sD":simple(d12)});
+Object.assign(loader.hash,{"sD":simple(d12),s1:simple(s1),s2:simple(s2),s3:simple(s3)});
 loader.exec.hashchange();
 loader.exec.hashDefault(simple(`v:Music,tag:h1
 v:这是一个歌单，被分为几个部分,div

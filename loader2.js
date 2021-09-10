@@ -403,41 +403,6 @@ Object.assign(loader.exec,{
 		}
 		return "cat";
 	},*/
-	"simpleT":function(str,arr,i)
-	{
-		let a=0,b;
-		let s;
-		if(arr!==null)
-		{
-			a=str.search(':');
-			b=str.search('=');
-			if(a>0&&b>0)
-				a=(a<b)?a:b;
-			else
-				a=(a>b)?a:b;
-			if(a===-1)
-				return "";
-			s=str.substring(0,a);
-			arr[i]=s;
-			a++;
-		}
-		//return str.substr(a+1);
-		b=str.length;
-		if(str.charAt(a)==='"')
-		{
-			a++;
-			b--;
-		}
-		if(str.charAt(a)===' ')
-		{
-			try{
-				return eval(str.substr(a+1));
-			}catch(e){
-				return;
-			}
-		}
-		return str.substring(a,b);
-	},
 	"getHash":function(url)
 	{
 		if(typeof url!=='string')
@@ -533,6 +498,115 @@ Object.assign(loader.exec,{
 			obj.hash=hash;
 		}
 		return loader.exec.hashC(null,"show",obj);
+	},
+	"simple_end":function(str,s,h,i,eq,a2,arr)
+	{
+		var t=[];
+		if(eq!==0)
+		{
+			t[0]=str.substring(h,eq);
+			t[1]=str.substring(eq+1,i);
+		}
+		else
+		{
+			t[0]=null;
+			t[1]=str.substring(h,i);
+		}
+		a2.push(t);
+		if(s==='\n')
+		{
+			arr.push(a2);
+			return [];
+		}
+		return a2;
+	},
+	"simple_q":function(str,i,len)
+	{
+		let c=str.charAt(i);
+		for(i++;i<len;i++)
+		{
+			s=str.charAt(i);
+			if(s==="\\")
+				i++;
+			else if(s===c)
+				break;
+		}
+		return i;
+	},
+	"simple_par":function(str)
+	{
+		let i=0,h=0,len;
+		let deep=0;
+		let c,s;
+		let eq=0;
+		var arr=[];
+		var a2=[];
+		len=str.length;
+		while(1)
+		{
+			s=str.charAt(i);
+			switch(s)
+			{
+				case '"':
+				case "'":
+				case '`':
+					i=loader.exec.simple_q(str,i,len);
+					break;
+				case '[':
+				case '{':
+					for(deep=0;i<len;i++)
+					{
+						s=str.charAt(i);
+						switch(s)
+						{
+							case '\\':
+								i++;
+								break;
+							case '[':
+							case '{':
+							case '(':
+								deep++;
+								break;
+							case ']':
+							case '}':
+							case ')':
+								deep--;
+								break;
+							case '"':
+							case "'":
+							case '`':
+								i=loader.exec.simple_q(str,i,len);
+								break;
+						}
+						if(deep===0)
+							break;
+					}
+					break;
+				case ":":
+				case "=":
+					eq=i;
+					break;
+				case ',':
+				case '\n':
+					a2=loader.exec.simple_end(str,s,h,i,eq,a2,arr);
+					eq=0;
+					h=i+1;
+				case ' ':
+				default:
+					break;
+			}
+			if(i===len)
+			{
+			loader.exec.simple_end(str,'\n',h,i,eq,a2,arr);
+			break;
+			}
+			i++;
+		}
+		return arr;
+	},
+	"simpleFn":function(data)
+	{
+		return {"type":"simple",data:data};
 	}
 });
 
@@ -550,6 +624,8 @@ loader.appendType(
 			{
 				if(!obj.href)
 					return null;
+				if(obj.download===null)
+					delete obj.download;
 				var v=obj.v||obj.value||obj.innerHTML;
 				if(!v)
 					obj.v=obj.href;
@@ -558,9 +634,12 @@ loader.appendType(
 			"tag":"a",
 			"attribute":{
 				"href":[["href"]],
-				"target":[["target"]]
+				"target":[["target"]],
+				"style":["display: ",["display"],";"],
+				"download":[["download"]]
 			},
-			"target":"_blank"
+			"target":"_blank",
+			"display":"inline"
 		},
 		"pic":{
 		"tag":"a",
@@ -633,7 +712,8 @@ loader.appendType(
 				obj.child=[{
 				"tag":"div",
 				"attribute":{
-					"onclick":"loader.exec.hideState(this,'"+obj.hideShow+"','"+obj.hideHide+"',"+loader.getD(obj.hide)+");"
+					"onclick":"loader.exec.hideState(this,'"+obj.hideShow+"','"+obj.hideHide+"',"+loader.getD(obj.hide)+");",
+					"class":"loader-hide"
 				},
 				"child":[{
 					"tag":"span",// title
@@ -653,8 +733,8 @@ loader.appendType(
 			},
 			"tag":"div",
 			"attribute":{
-				"class":"loader-hide"
-			},
+				"style":"position:relative;"
+			}
 		},
 		"text":{
 			"tag":"pre",
@@ -766,33 +846,37 @@ loader.appendType(
 		"simple":{
 			"exec":function(obj)
 			{
-				const reg1=/(?:\w+)?[ =:]{0,2}(?:"(\\?"?|[^"\\]+)+"|'(\\?'?|[^'\\]+)+'|`(\\?`?|[^`\\]+)+`|[^"'`,]+)+/g;
-				const reg2=/^\w+[\:\=]/;
-				const reg3=/(?:`(?:\\[`]?|[^`\\]+)+`|[^\n`]+)+/g;
-				if(typeof obj.data==="string")
-					obj.arr=obj.data.match(reg3);
-				else if(!Array.isArray(obj.data))
-					obj.arr=obj.data;
-				if(!Array.isArray(obj.arr))
+				if(typeof obj.data!=="string")
 					return null;
+				let a2=loader.exec.simple_par(obj.data);
 				let m=[];// model
 				var arr=[];
 				let k;
 				let s;
-				for(let t of obj.arr)
+				for(let t of a2)
 				{
-					if(typeof t==="number")
-						t=t.toString();
-					else if(typeof t!=="string")
-						return null;
-					k=t.match(reg1);
-					if(k===null)
-						continue;
 					var temp={};
-					for(let i=0;i<k.length;i++)
+					for(let i=0;i<t.length;i++)
 					{
-						
-						s=loader.exec.simpleT(k[i],((reg2.test(k[i]))?m:null),i);
+						k=t[i];
+						if(k[0]!==null)
+							m[i]=k[0];
+						switch(k[1].charAt(0))
+						{
+							case ' ':
+								try{
+									s=eval('('+k[1]+')');
+								}catch(e){}
+								break;
+							case '"':
+							case "'":
+							case '`':
+								s=k[1];
+								s=s.substring(1,s.length-1);
+								break;
+							default:
+								s=k[1];
+						}
 						temp[m[i]]=s;
 					}
 					//if(!temp.type)temp.type=loader.exec.simpleType(obj,m,k.length);
@@ -848,24 +932,21 @@ div.loader-code div:nth-child(2) pre code{
 	margin:0;
 	width:100%;
 }
-/*div.loader-hide{
-	display:block;
-	position:relative;
-}*/
-div.loader-hide div:nth-child(1){
+div.loader-hide{
 	border: 1px solid black;
 	width: calc(100% - 2px);
 }
-div.loader-hide div:nth-child(1) span:nth-child(1){
+div.loader-hide span:nth-child(1){
 	//display:inline;
 	overflow:hidden;
 	text-overflow:ellipsis;
 	white-space:nowrap;
 }
-div.loader-hide div:nth-child(1) span:nth-child(2){
+div.loader-hide span:nth-child(2){
 	//display:inline;
 	position: absolute;
 	right:0;
+	top:0;
 }
 .loader-hide-box{
 	width:100%;
@@ -892,7 +973,6 @@ div.loader-Bookmark a div:nth-child(1) img{
 	position:absolute;
 	width:100%;
 	max-height:100%;
-	background-color:red;
 }
 div.loader-Bookmark a div:nth-child(2){
 	width:100%;
@@ -930,6 +1010,81 @@ div.loader-hash[state=hide]{
 	display:none;
 }
 `);
+/* // 正则表达式卡死
+loader.types.simple.exec=function(obj)
+			{
+				const reg1=/(?:\w+)?[ =:]{0,2}(?:"(\\?"?|[^"\\]+)+"|'(\\?'?|[^'\\]+)+'|`(\\?`?|[^`\\]+)+`|[^"'`,]+)+/g;
+				const reg2=/^\w+[\:\=]/;
+				const reg3=/(?:`(?:\\[`]?|[^`\\]+)+`|[^\n`]+)+/g;
+				if(typeof obj.data==="string")
+					obj.arr=obj.data.match(reg3);
+				else if(!Array.isArray(obj.data))
+					obj.arr=obj.data;
+				if(!Array.isArray(obj.arr))
+					return null;
+				let m=[];// model
+				var arr=[];
+				let k;
+				let s;
+				for(let t of obj.arr)
+				{
+					if(typeof t==="number")
+						t=t.toString();
+					else if(typeof t!=="string")
+						return null;
+					k=t.match(reg1);
+					if(k===null)
+						continue;
+					var temp={};
+					for(let i=0;i<k.length;i++)
+					{
+						s=loader.exec.simpleT(k[i],((reg2.test(k[i]))?m:null),i);
+						temp[m[i]]=s;
+					}
+					//if(!temp.type)temp.type=loader.exec.simpleType(obj,m,k.length);
+					//loader.a2(obj.extraObj[temp.type],temp)
+					//alert(JSON.stringify(temp));
+					arr.push(temp);
+				}
+				obj.child=arr;
+				return loader.cat(obj);
+			}
+loader.exec.simpleT=function(str,arr,i)
+	{
+		let a=0,b;
+		let s;
+		if(arr!==null)
+		{
+			a=str.search(':');
+			b=str.search('=');
+			if(a>0&&b>0)
+				a=(a<b)?a:b;
+			else
+				a=(a>b)?a:b;
+			if(a===-1)
+				return;
+			s=str.substring(0,a);
+			arr[i]=s;
+			a++;
+		}
+		//return str.substr(a+1);
+		b=str.length;
+		if(str.charAt(a)==='"')
+		{
+			a++;
+			b--;
+		}
+		if(str.charAt(a)===' ')
+		{
+			try{
+				return eval("("+str.substr(a+1)+")");
+			}catch(e){
+				return;
+			}
+		}
+		return str.substring(a,b);
+	}
+*/
 loader.exec.what_encode=function(obj)
 {
 	if(typeof obj.what==="string"&&obj.what.length>0)
